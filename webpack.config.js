@@ -3,26 +3,18 @@ var webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-var assetPath = '/assets/';
-var absolutePath = path.join(__dirname, 'build', assetPath);
-
 const isDevelopment = (process.env.NODE_ENV || 'development') === 'development';
 
 module.exports = {
   devtool: 'source-map',
   mode: isDevelopment ? 'development' : 'production',
-  entry: [require.resolve('./polyfills'), 'webpack-hot-middleware/client', './src/index.tsx'],
+  entry: [require.resolve('./polyfills'), './src/index.tsx'],
   output: {
     path: path.resolve(__dirname, './public/dist'),
     publicPath: '/dist/',
     filename: 'bundle.js',
   },
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-      },
-    }),
     new webpack.HotModuleReplacementPlugin(),
     new MiniCssExtractPlugin({
       filename: isDevelopment ? '[name].css' : '[name].[hash].css',
@@ -30,6 +22,9 @@ module.exports = {
     }),
     new Dotenv(),
   ],
+  resolve: {
+    extensions: ['.mjs', '.web.ts', '.ts', '.web.tsx', '.tsx', '.web.js', '.js', '.json', '.web.jsx', '.jsx'],
+  },
   module: {
     rules: [
       {
@@ -39,62 +34,66 @@ module.exports = {
         enforce: 'pre',
       },
       {
+        oneOf: [
+          {
+            test: /\.(ts|tsx)$/,
+            exclude: /(node_modules|bower_components)/,
+            use: [
+              {
+                loader: require.resolve('ts-loader'),
+                options: {
+                  // disable type checker - we will use it in fork plugin
+                  transpileOnly: true,
+                },
+              },
+            ],
+          },
+          {
+            test: /\.css$/,
+            use: ['style-loader', 'css-loader'],
+          },
+          {
+            test: /\.module\.s(a|c)ss$/,
+            use: [
+              isDevelopment ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  modules: true,
+                  sourceMap: isDevelopment,
+                  esModule: true,
+                  hmr: isDevelopment,
+                },
+              },
+              {
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  sourceMap: isDevelopment,
+                },
+              },
+            ],
+          },
+          {
+            test: /\.s(a|c)ss$/,
+            exclude: /\.module.(s(a|c)ss)$/,
+            use: [
+              isDevelopment ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
+              require.resolve('css-loader'),
+              {
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  sourceMap: isDevelopment,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
         test: /\.(png|jpe?g|gif)$/i,
         use: [
           {
             loader: 'file-loader',
-          },
-        ],
-      },
-      {
-        test: /\.(ts|tsx)$/,
-        exclude: /(node_modules|bower_components)/,
-        use: [
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              // disable type checker - we will use it in fork plugin
-              transpileOnly: true,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
-      {
-        test: /\.module\.s(a|c)ss$/,
-        use: [
-          isDevelopment ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
-          {
-            loader: require.resolve('css-loader'),
-            options: {
-              modules: true,
-              sourceMap: isDevelopment,
-              esModule: true,
-              hmr: isDevelopment,
-            },
-          },
-          {
-            loader: require.resolve('postcss-loader'),
-            options: {
-              sourceMap: isDevelopment,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.s(a|c)ss$/,
-        exclude: /\.module.(s(a|c)ss)$/,
-        use: [
-          isDevelopment ? require.resolve('style-loader') : MiniCssExtractPlugin.loader,
-          require.resolve('css-loader'),
-          {
-            loader: require.resolve('postcss-loader'),
-            options: {
-              sourceMap: isDevelopment,
-            },
           },
         ],
       },

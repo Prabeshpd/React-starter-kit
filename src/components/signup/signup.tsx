@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import SignupForm from './signupForm';
 
@@ -12,11 +12,13 @@ interface DispatchPropsInterface {
 }
 
 function SignUp(props: DispatchPropsInterface) {
+  let navigate = useNavigate();
+
   const { CreateUser } = props;
   const handleFormSubmit = async (payload: SignupPayload) => {
     try {
       await CreateUser(payload);
-      <Navigate to="/login" replace={true} />;
+      navigate('/login');
     } catch (err) {
       console.log(err);
     }

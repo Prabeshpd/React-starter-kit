@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 import * as interceptors from './utils/interceptors';
+import { PersistGate } from 'redux-persist/integration/react';
 
 import 'font-awesome/css/font-awesome.css';
 import 'foundation-sites/dist/css/foundation.min.css';
@@ -9,8 +9,8 @@ import 'foundation-sites/dist/css/foundation.min.css';
 import store, { persistor } from './store';
 import { createRoot } from 'react-dom/client';
 
-import Routes from './components/router';
 import http from './utils/http';
+import Routes from './components/router';
 
 const container = document.getElementById('app');
 const root = createRoot(container!);

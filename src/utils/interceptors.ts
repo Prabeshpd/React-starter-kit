@@ -25,34 +25,30 @@ function getAuthorizationHeader(accessToken: string): string {
  * @param {any} err - Response error.
  */
 export async function unauthorizedResponseHandlerInterceptor(err: any) {
-  try {
-    if (err.response && err.response.config && err.response.config.url === config.endpoints.refresh) {
+  if (err.response && err.response.config && err.response.config.url === config.endpoints.refresh) {
+    store.dispatch(logout({ force: true }));
+
+    return Promise.reject(err);
+  }
+
+  const originalRequest = err.config;
+  let code = err.response && err.response.status;
+
+  if (code === HttpStatus.UNAUTHORIZED && !originalRequest['__isRetryRequest']) {
+    originalRequest.__isRetryRequest = true;
+    try {
+      const accessToken = (await store.dispatch(refreshToken())) as any;
+      originalRequest.headers[AUTHORIZATION_HEADER] = getAuthorizationHeader(accessToken.value);
+      return http.request(originalRequest);
+    } catch (error) {
       store.dispatch(logout({ force: true }));
 
-      return Promise.reject(err);
+      return Promise.reject(error);
     }
-
-    const originalRequest = err.config;
-    let code = err.response && err.response.status;
-
-    if (code === HttpStatus.UNAUTHORIZED && !originalRequest['__isRetryRequest']) {
-      originalRequest.__isRetryRequest = true;
-      try {
-        const accessToken = (await store.dispatch(refreshToken())) as any;
-        originalRequest.headers[AUTHORIZATION_HEADER] = getAuthorizationHeader(accessToken.value);
-        return http.request(originalRequest);
-      } catch (error) {
-        store.dispatch(logout({ force: true }));
-
-        return Promise.reject(error);
-      }
-    }
-    const storedData = store.getState() as any;
-    const accessToken = storedData.data.user.accessToken;
-    originalRequest.headers[AUTHORIZATION_HEADER] = getAuthorizationHeader(accessToken);
-  } catch (err) {
-    store.dispatch(logout({ force: true }));
   }
+  const storedData = store.getState() as any;
+  const accessToken = storedData.data.user.accessToken;
+  originalRequest.headers[AUTHORIZATION_HEADER] = getAuthorizationHeader(accessToken);
 
   return Promise.reject(err);
 }

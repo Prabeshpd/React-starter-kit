@@ -31,17 +31,17 @@ interface DispatchPropsInterface {
 
 type InjectedProps = StatePropsInterface & DispatchPropsInterface;
 
-function Beer(props: InjectedProps) {
+export function Beer(props: InjectedProps) {
   const { punkBeers, FetchAllBeer, isLoadingPunkBeers, myBeer, isLoadingMyBeers, CreateMyBeer, logout } = props;
   const { state, dispatch } = useTabChange();
   const { state: componentState, dispatch: componentDispatch } = useComponentState();
 
   const openModal = () => {
-    componentDispatch({ type: 'TOGGLE_MODAl', payload: true });
+    componentDispatch({ type: 'TOGGLE_MODAL', payload: true });
   };
 
   const closeModal = () => {
-    componentDispatch({ type: 'TOGGLE_MODAl', payload: false });
+    componentDispatch({ type: 'TOGGLE_MODAL', payload: false });
   };
 
   const handleFormSubmit = async (payload: MyBeerPayload) => {

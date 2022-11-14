@@ -69,7 +69,7 @@ export function useTabChange() {
 const NEXT = 'NEXT';
 type NEXT = typeof NEXT;
 
-const TOGGLE_MODAL = 'TOGGLE_MODAl';
+const TOGGLE_MODAL = 'TOGGLE_MODAL';
 type TOGGLE_MODAL = typeof TOGGLE_MODAL;
 
 type next = Action<NEXT>;

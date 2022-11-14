@@ -6,7 +6,7 @@ import './modal.css';
 import AddMyBeerForm from './addMyBeerForm';
 import { MyBeerPayload } from '../../../../types/Beer';
 
-Modal.setAppElement('#app');
+Modal.setAppElement('*');
 
 interface InjectedProps {
   openModal: () => void;

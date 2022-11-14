@@ -8,7 +8,7 @@ interface InjectedProps {
   handleFormSubmit: (payload: SignupPayload) => void;
 }
 
-function SignUpForm(props: InjectedProps) {
+export function SignUpForm(props: InjectedProps) {
   const { handleFormSubmit } = props;
   return (
     <Formik
@@ -72,10 +72,16 @@ function SignUpForm(props: InjectedProps) {
             </div>
           </div>
           <div className="grid-x grid-margin-x flex-container align-right">
-            <button className="button large-3 small m-2 secondary hollow" type="reset" value="Reset">
+            <button className="button large-3 small m-2 secondary hollow" name="reset" type="reset" value="Reset">
               Cancel
             </button>
-            <button className="button large-3 small m-2" type="submit" disabled={isSubmitting} value="Submit">
+            <button
+              className="button large-3 small m-2"
+              name="submit"
+              type="submit"
+              disabled={isSubmitting}
+              value="Submit"
+            >
               Save
             </button>
           </div>

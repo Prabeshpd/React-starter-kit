@@ -11,7 +11,7 @@ interface DispatchPropsInterface {
   CreateUser: (payload: SignupPayload) => void;
 }
 
-function SignUp(props: DispatchPropsInterface) {
+export function SignUp(props: DispatchPropsInterface) {
   let navigate = useNavigate();
 
   const { CreateUser } = props;
@@ -26,6 +26,7 @@ function SignUp(props: DispatchPropsInterface) {
 
   return (
     <div className="flex-container align-center">
+      Signup Form
       <div className="callout m-24" style={{ width: '30%' }}>
         <SignupForm handleFormSubmit={handleFormSubmit} />
       </div>

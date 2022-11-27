@@ -20,6 +20,14 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: 'yarn'
+
       - id: check # This will be the reference for getting the outputs.
         uses: EndBug/version-check@v2 # You can choose the version/branch you prefer.
 

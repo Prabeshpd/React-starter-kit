@@ -1,0 +1,51 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Setup Node
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn
+      - run: yarn build
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - id: check # This will be the reference for getting the outputs.
+        uses: EndBug/version-check@v2 # You can choose the version/branch you prefer.
+
+        with:
+          # All these parameters are optional,
+          # check their descriptions to see if you need them.
+
+          # Whether to search in every commit's diff.
+          # This is useful if you often do change the version without saying it in the
+          # commit message. If you always include the semver of the new version in your
+          # commit message when you bump versions then you can omit this.
+          # Default: false
+          diff-search: true
+
+          # You can use this to make the action use the current version (either from the
+          # local file or the provided URL, see the `file-url` option) as either the added
+          # or deleted version.
+          # Accepted values are 'new' (if you want that version to be the "added" one) and
+          # 'old' (to make it the "deleted" one).
+          # Default: ''
+          assume-same-version: old
+
+      - name: Log when changed
+        if: steps.check.outputs.changed == 'true'
+        run: 'echo "Version change found in commit ${{ steps.check.outputs.commit }}! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
+
+      - name: Log when unchanged
+        if: steps.check.outputs.changed == 'false'
+        run: 'echo "No version change :/"'
